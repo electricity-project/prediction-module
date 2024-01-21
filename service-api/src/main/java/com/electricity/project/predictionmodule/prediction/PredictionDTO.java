@@ -1,11 +1,12 @@
 package com.electricity.project.predictionmodule.prediction;
 
+import com.electricity.project.predictionmodule.powerstation.PowerStationState;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Value.Immutable
@@ -18,7 +19,7 @@ public interface PredictionDTO {
     }
 
     @JsonProperty(value = "predictionDate", required = true)
-    LocalDateTime getPredictionDate();
+    LocalDate getPredictionDate();
 
     @JsonProperty(value = "predictionStates", required = true)
     Set<PowerStationState> getPredictionStates();

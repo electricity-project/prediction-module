@@ -4,7 +4,7 @@ services:
       context: .
     environment:
       CENTRAL_MODULE_URL: http://central-module:8080
-      CALCULATIONS_DB_ACCESS_MAPPING_URL: /calculations-db-access
+      CALCULATIONS_DB_ACCESS_URL: http://calculations-db-access:8090
       REAL_TIME_CALCULATIONS_MAPPING_URL: /real-time-calculations
       SERVER_PORT: 8086
     ports:

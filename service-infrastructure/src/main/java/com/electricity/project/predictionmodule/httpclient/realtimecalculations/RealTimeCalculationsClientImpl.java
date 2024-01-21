@@ -1,8 +1,44 @@
 package com.electricity.project.predictionmodule.httpclient.realtimecalculations;
 
+import com.electricity.project.predictionmodule.realtimecalculations.OptimizationDTO;
+import com.electricity.project.predictionmodule.realtimecalculations.OptimizeProductionDTO;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
+import reactor.util.retry.Retry;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Component
 public class RealTimeCalculationsClientImpl implements RealTimeCalculationsClient {
-    // TODO implement HTTP client
+    private final WebClient client;
+
+    public RealTimeCalculationsClientImpl(
+            @Value("${central.module.url}${real.time.calculations.mapping.url}/api")
+            String baseUrl
+    ) {
+        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(10));
+        client = WebClient.builder()
+                .baseUrl(baseUrl)
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .build();
+    }
+
+    @Override
+    public OptimizationDTO optimizePowerStationsState(OptimizeProductionDTO optimizeProduction) {
+        return  client.post()
+                .uri("/optimize_production")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(optimizeProduction, OptimizeProductionDTO.class)
+                .accept(MediaType.APPLICATION_JSON)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .retrieve()
+                .bodyToMono(OptimizationDTO.class)
+                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(10)))
+                .block();
+    }
 }

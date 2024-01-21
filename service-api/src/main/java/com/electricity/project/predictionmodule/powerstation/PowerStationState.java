@@ -1,4 +1,4 @@
-package com.electricity.project.predictionmodule.prediction;
+package com.electricity.project.predictionmodule.powerstation;
 
 public enum PowerStationState {
     WORKING,
