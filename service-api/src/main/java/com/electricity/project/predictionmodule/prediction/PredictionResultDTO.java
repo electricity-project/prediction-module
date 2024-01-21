@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
+import java.time.LocalDateTime;
+
 @Value.Immutable
 @Value.Style
 @JsonSerialize(as = ImmutablePredictionResultDTO.class)
@@ -19,4 +21,7 @@ public interface PredictionResultDTO {
 
     @JsonProperty(value = "runningPowerStationsNumber", required = true)
     int getRunningPowerStationsNumber();
+
+    @JsonProperty(value = "timestamp", required = true)
+    LocalDateTime getTimestamp();
 }

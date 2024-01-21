@@ -57,6 +57,7 @@ public class PredictionService {
         return PredictionResultDTO.builder()
                 .powerProduction(sumPowerProduction(powerProductions))
                 .runningPowerStationsNumber(powerProductions.size())
+                .timestamp(weatherForecast.getTime())
                 .build();
     }
 
