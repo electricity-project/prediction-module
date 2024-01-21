@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.immutables.value.Value;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Value.Immutable
 @Value.Style
@@ -26,7 +25,7 @@ public interface PowerStationDTO {
     }
 
     @JsonProperty(value = "id")
-    Optional<Long> getId();
+    Long getId();
 
     @JsonProperty(value = "ipv6", required = true)
     String getIpv6Address();
