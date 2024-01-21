@@ -10,9 +10,11 @@ import com.electricity.project.predictionmodule.realtimecalculations.Optimizatio
 import com.electricity.project.predictionmodule.realtimecalculations.OptimizeProductionDTO;
 import com.electricity.project.predictionmodule.realtimecalculations.PowerProductionDTO;
 import com.electricity.project.predictionmodule.realtimecalculations.PowerStationFilterDTO;
+import com.electricity.project.predictionmodule.weather.ForecastHourWeatherDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -38,7 +40,7 @@ public class PredictionService {
 
     private PredictionResultDTO makePredictionFor(LocalDateTime date, Set<PowerStationState> predictionStates) {
         List<PowerStationDTO> powerStations = getAllPowerStations();
-        List<PowerProductionDTO> powerProductions = calculatePowerProductions(powerStations, date);
+        List<PowerProductionDTO> powerProductions = calculatePowerProductions(powerStations, date.toLocalDate());
         OptimizationDTO optimizationResult = optimize(powerProductions, predictionStates);
         powerProductions = filterByOnPowerStations(powerProductions, optimizationResult);
         return PredictionResultDTO.builder()
@@ -60,14 +62,14 @@ public class PredictionService {
                 .toList();
     }
 
-    private List<PowerProductionDTO> calculatePowerProductions(List<PowerStationDTO> powerStations, LocalDateTime date) {
+    private List<PowerProductionDTO> calculatePowerProductions(List<PowerStationDTO> powerStations, LocalDate date) {
         // TODO
+        List<ForecastHourWeatherDTO> weatherForecast = calculationDbAccessClient.getWeatherForecastFor(date);
         return Collections.singletonList(PowerProductionDTO.builder().build());
     }
 
     private List<PowerStationDTO> getAllPowerStations() {
-        // TODO
-        return Collections.emptyList();
+        return calculationDbAccessClient.getFilteredPowerStations(PowerStationFilterDTO.builder().build());
     }
 
     private OptimizationDTO optimize(List<PowerProductionDTO> powerProductions, Set<PowerStationState> powerStationStates) {
