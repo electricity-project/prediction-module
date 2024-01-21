@@ -1,0 +1,11 @@
+services:
+  prediction-module:
+    build:
+      context: .
+    environment:
+      CENTRAL_MODULE_URL: http://central-module:8080
+      CALCULATIONS_DB_ACCESS_MAPPING_URL: /calculations-db-access
+      REAL_TIME_CALCULATIONS_MAPPING_URL: /real-time-calculations
+      SERVER_PORT: 8086
+    ports:
+      - "8086:8086"
