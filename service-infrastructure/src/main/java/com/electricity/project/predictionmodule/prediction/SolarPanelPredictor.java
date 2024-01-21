@@ -5,7 +5,7 @@ import com.electricity.project.predictionmodule.weather.ForecastHourWeatherDTO;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SolarPanelPredictor implements PowerStationPredictor<SolarPanelDTO> {
+public class SolarPanelPredictor extends PowerStationPredictor<SolarPanelDTO> {
 
     @Override
     public long makePrediction(SolarPanelDTO powerStation, ForecastHourWeatherDTO weatherForecast) {
