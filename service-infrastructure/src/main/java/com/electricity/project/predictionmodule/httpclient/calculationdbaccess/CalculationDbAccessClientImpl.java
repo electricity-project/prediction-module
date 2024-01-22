@@ -49,7 +49,7 @@ public class CalculationDbAccessClientImpl implements CalculationDbAccessClient 
     @Override
     public List<ForecastHourWeatherDTO> getWeatherForecastFor(LocalDate date) {
         return  client.get()
-                .uri("/power-station/all_filter_list", uriBuilder -> uriBuilder
+                .uri("/weather-api/forecast", uriBuilder -> uriBuilder
                         .queryParam("date", date.toString())
                         .build()
                 )

@@ -40,7 +40,7 @@ public class PredictionService {
         List<ForecastHourWeatherDTO> hoursWeatherForecast = calculationDbAccessClient.getWeatherForecastFor(predictionDate);
         List<PredictionResultDTO> predictionResult = new LinkedList<>();
         for (ForecastHourWeatherDTO weatherForecast : hoursWeatherForecast) {
-            predictionResult.addLast(makePredictionFor(predictionDto.getPredictionStates(), weatherForecast));
+            predictionResult.addLast(makePredictionFor(predictionDto.getPowerStationsScope().getStates(), weatherForecast));
         }
         return predictionResult;
     }
