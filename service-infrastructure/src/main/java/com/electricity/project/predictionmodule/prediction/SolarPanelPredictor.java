@@ -10,6 +10,6 @@ public class SolarPanelPredictor extends PowerStationPredictor<SolarPanelDTO> {
     @Override
     public long makePrediction(SolarPanelDTO powerStation, ForecastHourWeatherDTO weatherForecast) {
         // TODO
-        return (long) (Math.random() * 1000);
+        return (long) (Math.random() * 100);
     }
 }

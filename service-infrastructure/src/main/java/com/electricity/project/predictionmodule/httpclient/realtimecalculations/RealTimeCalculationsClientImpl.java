@@ -7,8 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
-import reactor.util.retry.Retry;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -21,7 +21,7 @@ public class RealTimeCalculationsClientImpl implements RealTimeCalculationsClien
             @Value("${central.module.url}${real.time.calculations.mapping.url}/api")
             String baseUrl
     ) {
-        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(10));
+        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofSeconds(1000));
         client = WebClient.builder()
                 .baseUrl(baseUrl)
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
@@ -33,12 +33,11 @@ public class RealTimeCalculationsClientImpl implements RealTimeCalculationsClien
         return  client.post()
                 .uri("/optimize_production")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(optimizeProduction, OptimizeProductionDTO.class)
+                .body(Mono.just(optimizeProduction), OptimizeProductionDTO.class)
                 .accept(MediaType.APPLICATION_JSON)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .retrieve()
                 .bodyToMono(OptimizationDTO.class)
-                .retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(10)))
                 .block();
     }
 }

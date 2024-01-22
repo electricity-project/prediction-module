@@ -4,10 +4,7 @@ import com.electricity.project.predictionmodule.domains.prediction.control.excep
 import com.electricity.project.predictionmodule.domains.prediction.control.exception.UnknownPowerStation;
 import com.electricity.project.predictionmodule.httpclient.calculationdbaccess.CalculationDbAccessClient;
 import com.electricity.project.predictionmodule.httpclient.realtimecalculations.RealTimeCalculationsClient;
-import com.electricity.project.predictionmodule.powerstation.PowerStationDTO;
-import com.electricity.project.predictionmodule.powerstation.PowerStationState;
-import com.electricity.project.predictionmodule.powerstation.SolarPanelDTO;
-import com.electricity.project.predictionmodule.powerstation.WindTurbineDTO;
+import com.electricity.project.predictionmodule.powerstation.*;
 import com.electricity.project.predictionmodule.prediction.PowerStationPredictor;
 import com.electricity.project.predictionmodule.prediction.PredictionDTO;
 import com.electricity.project.predictionmodule.prediction.PredictionResultDTO;
@@ -20,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -47,11 +45,11 @@ public class PredictionService {
 
     private boolean dateNotInPredictionRange(LocalDate predictionDate) {
         LocalDate now = LocalDate.now();
-        return predictionDate.isBefore(now.plusDays(16)) && predictionDate.isAfter(now);
+        return !predictionDate.isBefore(now.plusDays(16)) || !predictionDate.isAfter(now);
     }
 
     private PredictionResultDTO makePredictionFor(Set<PowerStationState> predictionStates, ForecastHourWeatherDTO weatherForecast) {
-        List<PowerProductionDTO> powerProductions = calculatePowerStationsPowerProduction(getAllPowerStations(), weatherForecast);
+        List<PowerProductionDTO> powerProductions = calculatePowerStationsPowerProduction(getPowerStations(predictionStates), weatherForecast);
         OptimizationDTO optimizationResult = optimize(powerProductions, predictionStates);
         powerProductions = filterByTurnOnPowerStations(powerProductions, optimizationResult);
         return PredictionResultDTO.builder()
@@ -61,7 +59,7 @@ public class PredictionService {
                 .build();
     }
 
-    private List<PowerProductionDTO> calculatePowerStationsPowerProduction(List<PowerStationDTO> powerStations, ForecastHourWeatherDTO weatherForecast) {
+    private List<PowerProductionDTO> calculatePowerStationsPowerProduction(List<? extends PowerStationDTO> powerStations, ForecastHourWeatherDTO weatherForecast) {
         return powerStations.stream()
                 .map(powerStation -> calculatePowerStationPowerProduction(powerStation, weatherForecast))
                 .toList();
@@ -75,15 +73,17 @@ public class PredictionService {
         };
         return PowerProductionDTO.builder()
                 .id(powerStation.getId())
-                .state(powerStation.getState())
+                .state(PowerStationState.WORKING)
                 .ipv6Address(powerStation.getIpv6Address())
-                .timestamp(weatherForecast.getTime())
+                .timestamp(weatherForecast.getTime().atZone(ZoneId.of("UTC")))
                 .producedPower(producedPower)
                 .build();
     }
 
-    private List<PowerStationDTO> getAllPowerStations() {
-        return calculationDbAccessClient.getFilteredPowerStations(PowerStationFilterDTO.builder().build());
+    private List<PowerStationDTO> getPowerStations(Set<PowerStationState> predictionStates) {
+        return calculationDbAccessClient.getFilteredPowerStations(PowerStationFilterDTO.builder()
+                .statePatterns(predictionStates)
+                .build());
     }
 
     private OptimizationDTO optimize(List<PowerProductionDTO> powerProductions, Set<PowerStationState> powerStationStates) {
