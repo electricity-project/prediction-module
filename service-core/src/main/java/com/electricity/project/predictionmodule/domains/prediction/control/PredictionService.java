@@ -62,6 +62,7 @@ public class PredictionService {
     private List<PowerProductionDTO> calculatePowerStationsPowerProduction(List<? extends PowerStationDTO> powerStations, ForecastHourWeatherDTO weatherForecast) {
         return powerStations.stream()
                 .map(powerStation -> calculatePowerStationPowerProduction(powerStation, weatherForecast))
+                .filter(powerProduction -> powerProduction.getProducedPower() > 0)
                 .toList();
     }
 
