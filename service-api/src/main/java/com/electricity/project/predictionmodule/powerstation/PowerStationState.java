@@ -4,5 +4,6 @@ public enum PowerStationState {
     WORKING,
     STOPPED,
     DAMAGED,
-    MAINTENANCE
+    MAINTENANCE,
+    STOPPED_BY_USER
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 @Getter
 public enum PowerStationsScope {
     ALL_POWER_STATIONS(Set.of(PowerStationState.values())),
-    WORKING_POWER_STATIONS(Set.of(PowerStationState.WORKING, PowerStationState.STOPPED));
+    WORKING_POWER_STATIONS(Set.of(PowerStationState.WORKING, PowerStationState.STOPPED, PowerStationState.STOPPED_BY_USER));
 
     private final Set<PowerStationState> states;
 
